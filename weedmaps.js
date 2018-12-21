@@ -11,8 +11,8 @@ class Weedmaps {
         return data;
     }
 
-    async getMenuItems(dispensarySlug, page){
-        let url = `${this.baseURL}/listings/dispensaries/${dispensarySlug}/menu_items?limit=150&page=${page}`;
+    async getMenuItems(dispensarySlug, searchString){
+        let url = `${this.baseURL}/listings/dispensaries/${dispensarySlug}/menu_items?limit=18&multi_sort_by[]=relevance&multi_sort_order[]=desc&filter[match]=${searchString}`;
         let { data } = await axios.get(url);
         return data;
     }

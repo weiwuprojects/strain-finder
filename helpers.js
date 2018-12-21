@@ -9,26 +9,23 @@ async function getClosestStores(lat, long){
 }
 
 /* Search a dispensary for a given strain */
-async function searchShop(dispensarySlug, strain){
-    let currentPage = 1;
-    let data = await weedmaps.getMenuItems(dispensarySlug, currentPage);
-    let results = [];
-    let menuItems = data.data.menu_items;
-    while( menuItems.length > 0){
-        let data = await weedmaps.getMenuItems(dispensarySlug, currentPage);
-        menuItems = data.data.menu_items;
 
-        for( let item of menuItems){
-            let lowercaseName = item.name.toLowerCase();
-            if (lowercaseName.includes(strain) || item.name.includes(strain)){
-                results.push(item);
+async function searchShop(dispensarySlug, strain){
+    let { data } = await weedmaps.getMenuItems(dispensarySlug, strain);
+    let menuItems = data.menu_items;
+    let matches = [];
+
+    let tokens = strain.split('+');
+    for(let item of menuItems){
+        let lowercaseName = item.name.toLowerCase();
+        for (let token of tokens){
+            if (lowercaseName.includes(token) || item.name.includes(token)){
+                matches.push(item);
             }
         }
-
-        currentPage++;
     }
 
-    return results;
+    return matches;
 }
 
 module.exports.searchShop = searchShop;
