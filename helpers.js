@@ -2,11 +2,13 @@ const { Weedmaps } = require('./weedmaps');
 
 const weedmaps = new Weedmaps();
 
+/* Returns 5 stores closest to the given latitude, longitude coordinates */
 async function getClosestStores(lat, long){
     let searchResults = await weedmaps.getNearbyStores(lat, long);
     return searchResults.data.listings.splice(0, 6);
 }
 
+/* Search a dispensary for a given strain */
 async function searchShop(dispensarySlug, strain){
     let currentPage = 1;
     let data = await weedmaps.getMenuItems(dispensarySlug, currentPage);
