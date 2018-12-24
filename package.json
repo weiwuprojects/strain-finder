@@ -19,9 +19,7 @@
     "express": "^4.16.4",
     "next": "^7.0.2",
     "react": "^16.6.3",
-    "react-dom": "^16.6.3"
-  },
-  "devDependencies": {
+    "react-dom": "^16.6.3",
     "file-loader": "^3.0.1",
     "url-loader": "^1.1.2"
   }
