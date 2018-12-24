@@ -7,6 +7,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 let url = 'https://gist.githubusercontent.com/weiwuprojects/1fc01dffcbe6f7be50066c9b4033a0b5/raw/1f0daf773c1f49ee7a07a7857ae144a8c9c1d32e/store_data.json';
 
+
+// http://localhost:3000/api/lime+key?lat=34.041855999999996&long=-118.21056
+
 let categoryIcons = {
 	'Concentrate': 'fas fa-tint',
 	'Wax': 'fas fa-tint',
@@ -22,7 +25,9 @@ class Index extends React.Component {
 
 	state = {
 		data: [],
-		userLocation: null
+		searchText: '',
+		userLocation: null,
+		isLoading: false,
 	}
 
 	async componentDidMount(){
@@ -31,11 +36,6 @@ class Index extends React.Component {
 		} else {
 			alert('Geolocation is not enabled in your browser. Please use a browser which supports it.');
 		}
-	
-
-		let data = await fetch(url).then( res => res.json() );
-		this.setState({ data })
-		console.log(data);
 	}
 
 	savePosition = (position) => {
@@ -43,21 +43,58 @@ class Index extends React.Component {
 		console.log(this.state.userLocation)
 	}
 
+	handleChange = (e) => this.setState({ searchText: e.target.value });
+
+	handleSearch = async () => {
+		this.setState({ isLoading: true });
+		let { searchText, userLocation } = this.state;
+
+		if (userLocation === null){
+			console.log('user has not enable location')
+			return;
+		}
+		else {
+			let { latitude, longitude } = userLocation;
+			searchText = searchText.replace(/\ /g, '+');
+			url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
+			let data = await fetch(url).then( res => res.json() );
+			this.setState({ data })
+		}
+		this.setState({ isLoading: false });
+	}
 
 	render(){
 		return (
-			<div style={{ height: '100%', backgroundColor: '#242323', padding: '0 10px 0 10px' }}>
+			<div style={{ height: '100vh' }}>
 				<Header />
-				{ this.state.data.map( store => <div>
-																					<StoreHeader store={store.store_info} />
-																					<ProductTiles products={store.strains} />
-																				</div>
-															) 
-				}
+				<div style={{ height: '100%', backgroundColor: '#242323', padding: '0 10px 0 11px' }}>
+					<SearchForm isLoading={this.state.isLoading} handleChange={this.handleChange} handleSearch={this.handleSearch} />
+					{ this.state.data.map( store => <StoreContainer store={store} /> ) }
+				</div>
 			</div>
 		);
 	}
 }
+
+/* add fade in when text is typed and when component loads */
+const SearchForm = ({ isLoading, handleChange, handleSearch }) =>
+	<div class="columns" style={{ paddingTop: '20px' }}>
+		<div class="column is-offset-4">
+			<div class="control">
+				<label class="label has-text-white" style={{ fontWeight: '300' }}>Search for strains near you</label>
+				<input class="input" type="text"  style={{ backgroundColor: '#242323', borderColor: '#fff', color: '#fff', width: '60%' }} onChange={handleChange} />
+				<a class={`button ${isLoading ? 'is-loading' : ''}`} style={{ backgroundColor: '#242323 !important', border: '1px solid white', color: '#fff', marginLeft: '10px' }} onClick={handleSearch}>
+					<i class="fas fa-search" />
+				</a>
+			</div>
+		</div>
+	</div>
+
+const StoreContainer = ({ store }) => 
+	<React.Fragment>
+		<StoreHeader store={store.store_info} />
+		<ProductTiles products={store.strains} />
+	</React.Fragment>
 
 const StoreHeader = ({ store }) => 
 	<div class="container has-text-white">
@@ -92,8 +129,7 @@ const ProductTiles = ({ products }) => {
 	
 	return (
 		<div class="columns">
-			<div class="column is-one-fifth"></div>
-			<div class="column">
+			<div class="column is-offset-one-fifth">
 				{ firstColumnCourses.map( course => <ProductCard item={course} />)}
 			</div>
 			<div class="column">
@@ -103,7 +139,6 @@ const ProductTiles = ({ products }) => {
 				{ thirdColumnCourses.map( course => <ProductCard item={course} />)}
 			</div>
 			<div class="column is-one-fifth"></div>
-
 		</div>
 	);
 }

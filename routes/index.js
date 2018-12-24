@@ -9,9 +9,6 @@ router.get('/:strain', async (req, res) => {
     let strain = req.params.strain;
     let { lat, long } = req.query;
 
-    lat = 34.041855999999996;
-    long = -118.21056;
-
     let results = [];
     let stores = await getClosestStores(lat, long);
     for (let store of stores){
