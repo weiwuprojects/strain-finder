@@ -1,15 +1,6 @@
 import 'bulma/css/bulma.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-
-// https://blog.logrocket.com/how-to-build-a-server-rendered-react-app-with-next-express-d5a389e7ab2f
-// https://nextjs.org/learn/basics/navigate-between-pages/link-with-a-button
-
-let url = 'https://gist.githubusercontent.com/weiwuprojects/1fc01dffcbe6f7be50066c9b4033a0b5/raw/1f0daf773c1f49ee7a07a7857ae144a8c9c1d32e/store_data.json';
-
-
-// http://localhost:3000/api/lime+key?lat=34.041855999999996&long=-118.21056
-
 let categoryIcons = {
 	'Concentrate': 'fas fa-tint',
 	'Wax': 'fas fa-tint',
@@ -18,7 +9,8 @@ let categoryIcons = {
 	'Hybrid': 'fas fa-cannabis',
 	'Edible': 'fas fa-cookie-bite',
 	'Preroll': 'fas fa-joint',
-	'Gear': 'fas fa-cog'
+	'Gear': 'fas fa-cog',
+	'Drink': 'fas fa-wine-bottle'
 }
 
 class Index extends React.Component {
@@ -27,6 +19,7 @@ class Index extends React.Component {
 		data: [],
 		searchText: '',
 		userLocation: null,
+		error: null,
 		isLoading: false,
 	}
 
@@ -43,51 +36,65 @@ class Index extends React.Component {
 		console.log(this.state.userLocation)
 	}
 
-	handleChange = (e) => this.setState({ searchText: e.target.value });
+	handleChange = (e) => {
+		if (e.key === 'Enter'){
+			this.handleSearch();
+			return;
+		}
+		this.setState({ searchText: e.target.value });
+	}
 
 	handleSearch = async () => {
 		this.setState({ isLoading: true });
 		let { searchText, userLocation } = this.state;
 
 		if (userLocation === null){
-			console.log('user has not enable location')
+			this.setState({ isLoading: false, error: 'Geolocation not enabled!' });
 			return;
 		}
 		else {
 			let { latitude, longitude } = userLocation;
 			searchText = searchText.replace(/\ /g, '+');
-			url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
+			let url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
+			console.clear();
+			console.log(url)
 			let data = await fetch(url).then( res => res.json() );
-			this.setState({ data })
+			this.setState({ data, error: null })
 		}
 		this.setState({ isLoading: false });
 	}
 
 	render(){
 		return (
-			<div style={{ height: '100vh' }}>
+			<React.Fragment>
 				<Header />
-				<div style={{ height: '100%', backgroundColor: '#242323', padding: '0 10px 0 11px' }}>
-					<SearchForm isLoading={this.state.isLoading} handleChange={this.handleChange} handleSearch={this.handleSearch} />
+				<div style={{ minHeight: '100vh', backgroundColor: '#242323', padding: '0 10px 0 11px' }}>
+					<SearchForm isLoading={this.state.isLoading} handleChange={this.handleChange} handleSearch={this.handleSearch} error={this.state.error} />
 					{ this.state.data.map( store => <StoreContainer store={store} /> ) }
 				</div>
-			</div>
+			</React.Fragment>
 		);
 	}
 }
 
-/* add fade in when text is typed and when component loads */
-const SearchForm = ({ isLoading, handleChange, handleSearch }) =>
+/* 
+   add fade in when text is typed and when component loads 
+   fadeout searchform after load and place in navbar 
+   Getting location... loader
+*/
+const SearchForm = ({ isLoading, handleChange, handleSearch, error }) =>
 	<div class="columns" style={{ paddingTop: '20px' }}>
 		<div class="column is-offset-4">
 			<div class="control">
 				<label class="label has-text-white" style={{ fontWeight: '300' }}>Search for strains near you</label>
-				<input class="input" type="text"  style={{ backgroundColor: '#242323', borderColor: '#fff', color: '#fff', width: '60%' }} onChange={handleChange} />
+				<input class="input" type="text"  style={{ backgroundColor: '#242323', borderColor: '#fff', color: '#fff', width: '60%' }} onChange={handleChange} onKeyPress={ e => e.key === 'Enter' ? handleSearch() : null }/>
 				<a class={`button ${isLoading ? 'is-loading' : ''}`} style={{ backgroundColor: '#242323 !important', border: '1px solid white', color: '#fff', marginLeft: '10px' }} onClick={handleSearch}>
 					<i class="fas fa-search" />
 				</a>
+				{ error ? <p class="has-text-danger"><i class="fas fa-exclamation-triangle" style={{ marginRight: '5px' }}/>{error}</p> : null }
 			</div>
 		</div>
+		<div class="column"></div>
 	</div>
 
 const StoreContainer = ({ store }) => 
@@ -162,7 +169,7 @@ const ProductCard = ({ item }) => {
 	} 
 
 	return (
-		<div class="box" style={{ margin: '0 0 20px 0'}}>
+		<div class="box" style={{ margin: '0 0 20px 0', height: '420px' }}>
 			<div class="card-image">
 				<figure class="image is-4by3">
 					<img src={item.avatar_image.large_url} alt="Placeholder image" />
@@ -170,7 +177,7 @@ const ProductCard = ({ item }) => {
 			</div>
 			<div class="card-content">
 				<div class="media">
-					<div class="media-content">
+					<div class="media-content" style={{ margin: '10px 0 20px'}}>
 						<p class="subtitle">{item.name}</p>
 					</div>
 				</div>
