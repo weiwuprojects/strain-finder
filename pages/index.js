@@ -14,20 +14,35 @@ let categoryIcons = {
 	'Indica': 'fas fa-cannabis',
 	'Hybrid': 'fas fa-cannabis',
 	'Edible': 'fas fa-cookie-bite',
-	'Preroll': 'fas fa-joint'
+	'Preroll': 'fas fa-joint',
+	'Gear': 'fas fa-cog'
 }
 
 class Index extends React.Component {
 
 	state = {
-		data: []
+		data: [],
+		userLocation: null
 	}
 
 	async componentDidMount(){
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(this.savePosition, (err) => console.log(err));
+		} else {
+			alert('Geolocation is not enabled in your browser. Please use a browser which supports it.');
+		}
+	
+
 		let data = await fetch(url).then( res => res.json() );
 		this.setState({ data })
 		console.log(data);
 	}
+
+	savePosition = (position) => {
+		this.setState({ userLocation: position.coords });
+		console.log(this.state.userLocation)
+	}
+
 
 	render(){
 		return (
@@ -60,7 +75,7 @@ const StoreHeader = ({ store }) =>
 				</div>
 
 				<div class="level-item is-block">
-					<a class="button is-primary"> <i class="fas fa-clock" style={{ marginRight: '5px' }} />Open Now</a>
+					<a class="button is-info"> <i class="fas fa-clock" style={{ marginRight: '5px' }} />Open Now</a>
 				</div>
 
 			</div>
@@ -96,6 +111,21 @@ const ProductTiles = ({ products }) => {
 
 const ProductCard = ({ item }) => {
 	let iconClass = categoryIcons[item.category.name];
+
+	let priceSuffix, price;
+	if ( 'ounce' in item.prices){
+		price = item.prices.ounce[0].price;
+		priceSuffix = '1/8';
+	}
+	else if ( 'unit' in item.prices){
+		price = item.prices.unit.price;
+		priceSuffix = 'each';
+	}
+	else if ('gram' in item.prices){
+		price = item.prices.gram[0].price;
+		priceSuffix = item.prices.gram[0].units + 'g';
+	} 
+
 	return (
 		<div class="box" style={{ margin: '0 0 20px 0'}}>
 			<div class="card-image">
@@ -107,15 +137,23 @@ const ProductCard = ({ item }) => {
 				<div class="media">
 					<div class="media-content">
 						<p class="subtitle">{item.name}</p>
-						{/* <p class="subtitle is-6"></p> */}
-						<span class="tag is-success is-medium"><i class={iconClass} style={{ marginRight: '5px' }}/>{item.category.name}</span>
 					</div>
 				</div>
 
-				<div class="content">
-					<p>{item.prices.gram ? item.prices.gram[0].price : 'what'}</p>
-					<p>1g</p>
+				<div class="content" style={{ marginTop: '5px' }}>
+					<div class="field is-grouped is-grouped-multiline">
+						<div class="control">
+							<div class="tags has-addons">
+								<span class="tag is-light is-medium">${price}</span>
+								<span class="tag is-dark is-medium">{priceSuffix}</span>
+							</div>
+						</div>
+						<div class="control">
+							<span class="tag is-success is-medium"><i class={iconClass} style={{ marginRight: '5px' }}/>{item.category.name}</span>
+						</div>
+					</div>
 				</div>
+
 			</div>
 		</div>
 	);

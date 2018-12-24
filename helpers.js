@@ -9,7 +9,6 @@ async function getClosestStores(lat, long){
 }
 
 /* Search a dispensary for a given strain */
-
 async function searchShop(dispensarySlug, strain){
     let { data } = await weedmaps.getMenuItems(dispensarySlug, strain);
     let menuItems = data.menu_items;
