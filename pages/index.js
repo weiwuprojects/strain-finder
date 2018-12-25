@@ -47,7 +47,7 @@ class Index extends React.Component {
 	}
 
 	handleSearch = async () => {
-		this.setState({ isLoading: true });
+		this.setState({ isLoading: true, data: [] });
 		let { searchText, userLocation } = this.state;
 
 		if (userLocation === null){
@@ -58,9 +58,8 @@ class Index extends React.Component {
 			let { latitude, longitude } = userLocation;
 			searchText = searchText.replace(/\ /g, '+');
 			let url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
-			console.clear();
-			console.log(url)
 			let data = await fetch(url).then( res => res.json() );
+			console.log(data);
 			this.setState({ data, error: null })
 		}
 		this.setState({ isLoading: false });
@@ -80,12 +79,11 @@ class Index extends React.Component {
 }
 
 /* 
-   add fade in when text is typed and when component loads 
    fadeout searchform after load and place in navbar 
    Getting location... loader
 */
 const SearchForm = ({ isLoading, handleChange, handleSearch, error }) =>
-	<div class="columns" style={{ paddingTop: '20px' }}>
+	<div class="columns fade-in-bottom" style={{ paddingTop: '20px' }}>
 		<div class="column is-offset-4">
 			<div class="control">
 				<label class="label has-text-white" style={{ fontWeight: '300' }}>Search for strains near you</label>
@@ -106,7 +104,7 @@ const StoreContainer = ({ store }) =>
 	</React.Fragment>
 
 const StoreHeader = ({ store }) => 
-	<div class="container has-text-white">
+	<div class="container has-text-white fade-in">
 		<div class="level">
 			<div class="level-left">
 				<div class="level-item">
@@ -116,7 +114,7 @@ const StoreHeader = ({ store }) =>
 				</div>	
 
 				<div class="level-item is-block">
-					<p style={{ fontSize: '1.25rem' }}>{store.name}</p>
+					<a href={store.web_url} target="_blank" style={{ fontSize: '1.25rem', color: 'white' }}>{store.name}</a>
 					<p>{store.address}, {store.city}</p>
 				</div>
 
@@ -137,7 +135,7 @@ const ProductTiles = ({ products }) => {
 	let thirdColumnCourses =  products.slice(2).filter( (value, index) => index % 3 === 0 );
 	
 	return (
-		<div class="columns">
+		<div class="columns fade-in-bottom">
 			<div class="column is-offset-one-fifth">
 				{ firstColumnCourses.map( course => <ProductCard item={course} />)}
 			</div>
@@ -203,19 +201,11 @@ const ProductCard = ({ item }) => {
 	);
 }
 
-
-
 const Header = () =>
 	<nav className="navbar is-black" role="navigation" aria-label="main navigation">
 	  <div class="navbar-brand">
 	    <a class="navbar-item">
-				<p class="subtitle has-text-white">Strains</p>
-	    </a>
-
-	    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-	      <span aria-hidden="true"></span>
-	      <span aria-hidden="true"></span>
-	      <span aria-hidden="true"></span>
+			<p class="subtitle has-text-white fade-in"><i class="fas fa-cannabis fa-lg" /></p>
 	    </a>
 	  </div>
 	</nav>
