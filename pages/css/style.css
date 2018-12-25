@@ -1,0 +1,41 @@
+.main { 
+    min-height: 100vh;
+    background-color: #242323;
+    padding: 0 10px 0 11px;
+}
+
+.input {
+    background-color: #242323;
+    border-color: #fff;
+    color: #fff;
+    width: 60%;
+}
+
+.input:focus {
+    border-color: #fff;
+}
+
+.button {
+    background-color: #242323;
+    border: 1px solid white;
+    color: #fff; 
+    margin-left: 10px;
+}
+
+.box {
+    margin: 0 0 20px 0; 
+    height: 420px;
+}
+
+.media-content {
+    margin: 10px 0 20px;
+}
+
+.fas {
+    margin-right: 5px;
+}
+
+.divider {
+    background-color: white;
+    height: 1px;
+}

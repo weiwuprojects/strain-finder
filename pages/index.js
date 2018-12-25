@@ -1,5 +1,6 @@
 import 'bulma/css/bulma.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import './css/style.css';
 
 let categoryIcons = {
 	'Concentrate': 'fas fa-tint',
@@ -24,6 +25,7 @@ class Index extends React.Component {
 	}
 
 	async componentDidMount(){
+		document.title = 'Strain Finder';
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(this.savePosition, (err) => console.log(err));
 		} else {
@@ -68,7 +70,7 @@ class Index extends React.Component {
 		return (
 			<React.Fragment>
 				<Header />
-				<div style={{ minHeight: '100vh', backgroundColor: '#242323', padding: '0 10px 0 11px' }}>
+				<div className="main">
 					<SearchForm isLoading={this.state.isLoading} handleChange={this.handleChange} handleSearch={this.handleSearch} error={this.state.error} />
 					{ this.state.data.map( store => <StoreContainer store={store} /> ) }
 				</div>
@@ -87,11 +89,11 @@ const SearchForm = ({ isLoading, handleChange, handleSearch, error }) =>
 		<div class="column is-offset-4">
 			<div class="control">
 				<label class="label has-text-white" style={{ fontWeight: '300' }}>Search for strains near you</label>
-				<input class="input" type="text"  style={{ backgroundColor: '#242323', borderColor: '#fff', color: '#fff', width: '60%' }} onChange={handleChange} onKeyPress={ e => e.key === 'Enter' ? handleSearch() : null }/>
-				<a class={`button ${isLoading ? 'is-loading' : ''}`} style={{ backgroundColor: '#242323 !important', border: '1px solid white', color: '#fff', marginLeft: '10px' }} onClick={handleSearch}>
-					<i class="fas fa-search" />
+				<input className="input strain-input" type="text" onChange={handleChange} onKeyPress={ e => e.key === 'Enter' ? handleSearch() : null }/>
+				<a class={`button ${isLoading ? 'is-loading' : ''}`} onClick={handleSearch}>
+					<i class="fas fa-search" style={{ marginRight: '0' }} />
 				</a>
-				{ error ? <p class="has-text-danger"><i class="fas fa-exclamation-triangle" style={{ marginRight: '5px' }}/>{error}</p> : null }
+				{ error ? <p class="has-text-danger"><i class="fas fa-exclamation-triangle"/>{error}</p> : null }
 			</div>
 		</div>
 		<div class="column"></div>
@@ -119,12 +121,12 @@ const StoreHeader = ({ store }) =>
 				</div>
 
 				<div class="level-item is-block">
-					<a class="button is-info"> <i class="fas fa-clock" style={{ marginRight: '5px' }} />Open Now</a>
+					<a class="button is-info"> <i class="fas fa-clock" />Open Now</a>
 				</div>
 
 			</div>
 		</div>
-		<hr style={{ backgroundColor: 'white', height: '1px' }} />
+		<hr class="divider" />
 	</div>
 
 
@@ -169,7 +171,7 @@ const ProductCard = ({ item }) => {
 	} 
 
 	return (
-		<div class="box" style={{ margin: '0 0 20px 0', height: '420px' }}>
+		<div class="box">
 			<div class="card-image">
 				<figure class="image is-4by3">
 					<img src={item.avatar_image.large_url} alt="Placeholder image" />
@@ -177,7 +179,7 @@ const ProductCard = ({ item }) => {
 			</div>
 			<div class="card-content">
 				<div class="media">
-					<div class="media-content" style={{ margin: '10px 0 20px'}}>
+					<div class="media-content">
 						<p class="subtitle">{item.name}</p>
 					</div>
 				</div>
@@ -191,7 +193,7 @@ const ProductCard = ({ item }) => {
 							</div>
 						</div>
 						<div class="control">
-							<span class="tag is-success is-medium"><i class={iconClass} style={{ marginRight: '5px' }}/>{item.category.name}</span>
+							<span class="tag is-success is-medium"><i class={iconClass}/>{item.category.name}</span>
 						</div>
 					</div>
 				</div>
