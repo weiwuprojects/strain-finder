@@ -128,7 +128,6 @@ const StoreHeader = ({ store }) =>
 
 
 const ProductTiles = ({ products }) => {
-	console.log(splitByThirds(products))
 	let firstColumn =  products.slice(0).filter( (value, index) => index % 3 === 0 );
 	let secondColumn = products.slice(1).filter( (value, index) => index % 3 === 0 );
 	let thirdColumn =  products.slice(2).filter( (value, index) => index % 3 === 0 );
