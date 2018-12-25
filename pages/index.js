@@ -35,7 +35,6 @@ class Index extends React.Component {
 
 	savePosition = (position) => {
 		this.setState({ userLocation: position.coords });
-		console.log(this.state.userLocation)
 	}
 
 	handleChange = (e) => {
@@ -59,7 +58,6 @@ class Index extends React.Component {
 			searchText = searchText.replace(/\ /g, '+');
 			let url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
 			let data = await fetch(url).then( res => res.json() );
-			console.log(data);
 			this.setState({ data, error: null })
 		}
 		this.setState({ isLoading: false });
@@ -130,28 +128,44 @@ const StoreHeader = ({ store }) =>
 
 
 const ProductTiles = ({ products }) => {
-	let firstColumnCourses =  products.slice(0).filter( (value, index) => index % 3 === 0 );
-	let secondColumnCourses = products.slice(1).filter( (value, index) => index % 3 === 0 );
-	let thirdColumnCourses =  products.slice(2).filter( (value, index) => index % 3 === 0 );
+	console.log(splitByThirds(products))
+	let firstColumn =  products.slice(0).filter( (value, index) => index % 3 === 0 );
+	let secondColumn = products.slice(1).filter( (value, index) => index % 3 === 0 );
+	let thirdColumn =  products.slice(2).filter( (value, index) => index % 3 === 0 );
 	
+	let firstDelay = 0.2;
+	let secondDelay = 0.4;
+	let thirdDelay = 0.6;
+
 	return (
-		<div class="columns fade-in-bottom">
+		<div class="columns">
 			<div class="column is-offset-one-fifth">
-				{ firstColumnCourses.map( course => <ProductCard item={course} />)}
+				{ firstColumn.map( item => { 
+						firstDelay += 0.6;
+						return <ProductCard item={item} delay={firstDelay} />;
+					})
+				}
 			</div>
 			<div class="column">
-				{ secondColumnCourses.map( course => <ProductCard item={course} />)}
+				{ secondColumn.map( item => { 
+						secondDelay += 0.6;
+						return <ProductCard item={item} delay={secondDelay} />;
+					})
+				}
 			</div>
 			<div class="column">
-				{ thirdColumnCourses.map( course => <ProductCard item={course} />)}
+				{ thirdColumn.map( item => { 
+						thirdDelay += 0.6;
+						return <ProductCard item={item} delay={thirdDelay} />;
+					})
+				}
 			</div>
 			<div class="column is-one-fifth"></div>
 		</div>
 	);
 }
 
-
-const ProductCard = ({ item }) => {
+const ProductCard = ({ item, delay }) => {
 	let iconClass = categoryIcons[item.category.name];
 
 	let priceSuffix, price;
@@ -169,7 +183,7 @@ const ProductCard = ({ item }) => {
 	} 
 
 	return (
-		<div class="box">
+		<div class="box fade-in-bottom" style={{ animationDelay: `${delay}s` }}>
 			<div class="card-image">
 				<figure class="image is-4by3">
 					<img src={item.avatar_image.large_url} alt="Placeholder image" />
