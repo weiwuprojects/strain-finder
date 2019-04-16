@@ -1,0 +1,9 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us.gcr.io/$PROJECT_ID/strain-finder:latest', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us.gcr.io/$PROJECT_ID/strain-finder:latest']
+- name: gcr.io/cloud-builders/gcloud
+  args: ['app', 'deploy', '--image-url', 'us.gcr.io/$PROJECT_ID/strain-finder']
+
+timeout: 20000s  
