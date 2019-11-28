@@ -58,7 +58,10 @@ class Index extends React.Component {
 			searchText = searchText.replace(/\ /g, '+');
 			let url = `${window.location.origin}/api/${searchText}?lat=${latitude}&long=${longitude}`
 			let data = await fetch(url).then( res => res.json() );
-			this.setState({ data, error: null })
+			if (data.error){
+				this.setState({ error: data.error });
+			}
+			else this.setState({ data, error: null })
 		}
 		this.setState({ isLoading: false });
 	}
