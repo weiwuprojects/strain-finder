@@ -71,7 +71,11 @@ class Index extends React.Component {
 			<React.Fragment>
 				<Header />
 				<div className="main">
-					<SearchForm isLoading={this.state.isLoading} handleChange={this.handleChange} handleSearch={this.handleSearch} error={this.state.error} />
+					<SearchForm isLoading={this.state.isLoading} 
+								handleChange={this.handleChange} 
+								handleSearch={this.handleSearch} 
+								userLocation={this.state.userLocation}
+								error={this.state.error} />
 					{ this.state.data.map( store => <StoreContainer store={store} /> ) }
 				</div>
 			</React.Fragment>
@@ -83,16 +87,17 @@ class Index extends React.Component {
    fadeout searchform after load and place in navbar 
    Getting location... loader
 */
-const SearchForm = ({ isLoading, handleChange, handleSearch, error }) =>
+const SearchForm = ({ isLoading, userLocation, handleChange, handleSearch, error }) =>
 	<div class="columns fade-in-bottom" style={{ paddingTop: '20px' }}>
 		<div class="column is-offset-4">
 			<div class="control">
 				<label class="label has-text-white" style={{ fontWeight: '300' }}>Search for strains near you</label>
 				<input className="input strain-input" type="text" onChange={handleChange} onKeyPress={ e => e.key === 'Enter' ? handleSearch() : null }/>
-				<a class={`button ${isLoading ? 'is-loading' : ''}`} onClick={handleSearch}>
+				<a class={`button ${isLoading ? 'is-loading' : ''} ${!userLocation ? 'no-click' : ''}`} onClick={handleSearch}>
 					<i class="fas fa-search" style={{ marginRight: '0' }} />
 				</a>
 				{ error ? <p class="has-text-danger"><i class="fas fa-exclamation-triangle"/>{error}</p> : null }
+				{ !userLocation && <p class="has-text-white location-loader">Getting location...</p> }
 			</div>
 		</div>
 		<div class="column"></div>
