@@ -5,12 +5,13 @@ const weedmaps = new Weedmaps();
 /* Returns 5 stores closest to the given latitude, longitude coordinates */
 async function getClosestStores(lat, long){
     let searchResults = await weedmaps.getNearbyStores(lat, long);
-    return searchResults.data.listings.splice(0, 6);
+    console.log(`retrieved ${searchResults.data.listings.length} stores`);
+    return searchResults.data.listings;
 }
 
 /* Search a dispensary for a given strain */
-async function searchShop(dispensarySlug, strain){
-    let { data } = await weedmaps.getMenuItems(dispensarySlug, strain);
+async function searchShop(dispensary, strain){
+    let { data } = await weedmaps.getMenuItems(dispensary.slug, strain);
     let menuItems = data.menu_items;
     let matches = [];
 
@@ -24,7 +25,10 @@ async function searchShop(dispensarySlug, strain){
         }
     }
 
-    return matches;
+    return {
+        store_info: dispensary,
+        strains: matches
+    };
 }
 
 module.exports.searchShop = searchShop;

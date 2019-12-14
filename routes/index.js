@@ -9,19 +9,11 @@ router.get('/:strain', async (req, res) => {
     let strain = req.params.strain;
     let { lat, long } = req.query;
     try {
-        let results = [];
         let stores = await getClosestStores(lat, long);
-        for (let store of stores){
-            let searchResult = {
-                store_info: store,
-                strains: await searchShop(store.slug, strain)
-            }
-    
-            if (searchResult.strains.length > 0){
-                results.push(searchResult)
-            }
-        }
-        res.status(200).send(results);
+        let menusQueries = stores.map( store => searchShop(store, strain));
+        let menus = await Promise.all(menusQueries);
+        menus = menus.filter( menu => menu.strains.length > 0 );
+        res.status(200).send(menus);
     }
     catch(e){
         console.log(e)
